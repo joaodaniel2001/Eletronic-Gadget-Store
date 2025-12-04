@@ -3,8 +3,8 @@ const { Pool } = require('pg')
 
 // Conexão com o Banco de Dados
 const pool = new Pool ({
-    host: 'postgres',
-    user: 'localhost',
+    host: 'localhost',
+    user: 'postgres',
     database: 'eletronic-store',
     password: 'root',
     port: 5432
@@ -23,3 +23,4 @@ pool.connect()
 
 // Exportando a pool
 module.exports = pool
+
