@@ -22,8 +22,8 @@ const BotNavbar = () => {
         return localStorage.getItem(key) || defaultValue;
     };
 
-    const [language, setLanguage] = useState(getStorage("Site Language:", 'Language'));
-    const [flagCode, setFlagCode] = useState(getStorage("Flag Code:", ''));
+    const [language, setLanguage] = useState(getStorage("Site Language:", 'English'));
+    const [flagCode, setFlagCode] = useState(getStorage("Flag Code:", 'US'));
 
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -60,7 +60,6 @@ const BotNavbar = () => {
         setIsDropdownOpen(false);
     };
 
-    // 2. Função utilitária para mapear string para Componente de Ícone
     const getIconComponent = (iconName) => {
         switch (iconName) {
             case 'User': return User;
@@ -95,7 +94,7 @@ const BotNavbar = () => {
             <div className='flex items-center gap-x-4'>
                 {/* Icons */}
                 <ShoppingCart className='cursor-pointer text-gray-400 hover:text-black transition' />
-                <Heart className='cursor-pointer text-gray-400 hover:text-black transition' />
+                <Heart className='cursor-pointer text-gray-400 hover:text-black transition rounded-full' />
 
                 {/* Language Dropdown */}
                 <div className="relative hidden md:block">
