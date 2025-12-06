@@ -4,6 +4,7 @@
   box-sizing: border-box;
 }
 
-main {
+.content {
   min-height: 140vh;
+  padding-top: 128px;
 }

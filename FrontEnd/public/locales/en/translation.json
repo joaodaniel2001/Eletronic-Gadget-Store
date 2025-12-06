@@ -1,0 +1,24 @@
+{
+    "supbar-street": {
+        "part_01": "André Voltolini Street,",
+        "part_02": "nº 555 room 01,",
+        "part_03": "Nereu Ramos"
+    },
+    "supbar-guarantee": "Satisfaction Guaranteed or Your Money Back within 30 days.",
+    "search": {
+        "placeholder": "What are you looking for?"
+    },
+    "user_menu": {
+        "welcome_back": "Welcome Back!"
+    },
+    "navbar-menu": {
+        "my_profile": "My profile",
+        "my_orders": "My orders",
+        "settings": "Settings",
+        "logout": "Logout"
+    },
+    "home-banner": {
+        "text-h1": "Give someone a special gift.",
+        "button": "Find out more"
+    }
+}

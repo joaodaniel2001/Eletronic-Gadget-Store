@@ -1,16 +1,20 @@
 import React from 'react';
 import useIsAtTop from './useIsAtTop';
+import { useTranslation } from 'react-i18next'
 
 /* Icons */
 import { MapPin } from 'lucide-react'
 
 const SupNavbar = () => {
+
+    const { t } = useTranslation();
+
     const isAtTop = useIsAtTop();
 
     const visibilityClass =
         isAtTop
             ? 'opacity-100 translate-y-0 pointer-events-auto'
-            : 'opacity-0 -translate-y-full pointer-events-none';
+            : '';
 
     return (
         <div
@@ -20,10 +24,12 @@ const SupNavbar = () => {
             <div className='flex gap-3'>
                 <MapPin className='w-5 h-5' />
                 <p className='flex text-sm'>
-                    Rua André Voltolini, <span className='hidden md:block mx-1'> n-555 sala 01 </span> Nereu Ramos
+                    {t('supbar-street.part_01')}
+                    <span className='hidden md:block mx-1'>{t('supbar-street.part_02')} </span>
+                    {t('supbar-street.part_03')}
                 </p>
             </div>
-            <p className='hidden md:block text-sm'>Garantia de Satisfação ou seu Dinheiro de Volta em 30 dias.</p>
+            <p className='hidden md:block text-sm'>{t('supbar-guarantee')}</p>
         </div>
     );
 }

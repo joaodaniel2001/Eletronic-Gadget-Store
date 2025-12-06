@@ -41,6 +41,69 @@ const authenticateToken = (req, res, next) => {
 
 //      -- Rotas GET --     //
 
+// 1. Pegando as informações do Usuári
+app.get('/api/usuario/perfil', authenticateToken, async (req, res) => {
+    const userEmail = req.user.email; 
+
+    const client = await pool.connect();
+    
+    try {
+        await client.query('BEGIN');
+        
+        const userResult = await client.query(`
+            SELECT 
+                id, 
+                name, 
+                email, 
+                phone, 
+                registration_date, 
+                is_active, 
+                user_type
+            FROM users 
+            WHERE email = $1
+        `, [userEmail]);
+
+        const user = userResult.rows[0];
+        
+        if (!user) {
+            await client.query('ROLLBACK');
+            return res.status(404).json({ message: 'Usuário não encontrado.' });
+        }
+
+        const addressesResult = await client.query(`
+            SELECT 
+                id, 
+                street, 
+                number, 
+                complement, 
+                neighborhood, 
+                city, 
+                state, 
+                zip_code, 
+                is_primary
+            FROM addresses 
+            WHERE user_id = $1
+            ORDER BY is_primary DESC, id DESC
+        `, [user.id]); 
+        
+        const userData = {
+            ...user,
+            addresses: addressesResult.rows,
+        };
+
+        await client.query('COMMIT');
+        
+        res.json(userData); 
+        
+    } catch (error) {
+        await client.query('ROLLBACK');
+        console.error('Erro ao buscar perfil:', error);
+        res.status(500).json({ message: 'Erro ao buscar perfil no servidor.' });
+    } finally {
+        client.release();
+    }
+});
+
 //      -- Rotas POST --    //
 
 // 1. Login de Usuário

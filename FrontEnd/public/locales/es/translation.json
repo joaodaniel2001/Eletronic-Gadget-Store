@@ -1,0 +1,31 @@
+{
+    
+    "supbar-street": {
+        "part_01": "Calle André Voltolini,",
+        "part_02": "nº 555 sala 01,",
+        "part_03": "Nereu Ramos"
+    },
+
+    "supbar-guarantee": "Satisfacción garantizada o le devolvemos su dinero dentro de 30 días.",
+    
+    "search": {
+        "placeholder": "Qué estás buscando?"
+    },
+
+    "user_menu": {
+        "welcome_back": "¡Bienvenido de nuevo!"
+    },
+
+    "navbar-menu": {
+        "my_profile": "Mi perfil",
+        "my_orders": "Mis pedidos",
+        "settings": "Ajustes",
+        "logout": "Cerrar sesión"
+    },
+
+    "home-banner": {
+        "text-h1" : "Regale algo especial a alguien.",
+        "button": "Saiber más"
+    }
+
+}

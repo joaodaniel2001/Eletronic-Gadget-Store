@@ -1,5 +1,9 @@
-import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom';
+// FrontEnd/src/components/BotNavbar.jsx
+
+import React, { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../../../context/AuthContext'
+import { useTranslation } from 'react-i18next'
 
 /* Icons */
 import {
@@ -10,38 +14,60 @@ import {
 /* Flags */
 import ReactCountryFlag from 'react-country-flag';
 
+// Mapeamento dos idiomas
 const languageOptions = [
-    { label: 'English', code: 'US' },
-    { label: 'Portuguese', code: 'BR' },
-    { label: 'Spanish', code: 'ES' },
+    { label: 'English', code: 'en', flag: 'US' },
+    { label: 'Portuguese', code: 'pt', flag: 'BR' },
+    { label: 'Spanish', code: 'es', flag: 'ES' },
 ];
 
 const BotNavbar = () => {
 
-    const getStorage = (key, defaultValue) => {
-        return localStorage.getItem(key) || defaultValue;
+    // Importa a função de tradução (t) e a instância do i18next (i18n)
+    const { t, i18n } = useTranslation();
+
+    const { user, logout } = useAuth();
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        logout();
+        navigate('/', { replace: true });
     };
 
-    const [language, setLanguage] = useState(getStorage("Site Language:", 'English'));
-    const [flagCode, setFlagCode] = useState(getStorage("Flag Code:", 'US'));
+    // Lógica para nome do usuário
+    const partsName = user.name ? user.name.split(' ') : [''];
+    const firstName = partsName[0];
+    const fistLetterName = user.name ? user.name[0] : '';
+    const secondName = partsName.length > 1 ? partsName[1] : '';
+    const secondLetterName = secondName ? secondName[0].toUpperCase() : '';
 
+    // Estados para controlar os dropdowns 
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
-    // 1. Defina os ícones como strings
+    // Itens do menu do usuário
     const userMenuItems = [
-        { label: 'Meu Perfil', icon: 'User', to: '/profile' },
-        { label: 'Meus Pedidos', icon: 'Package', to: '/orders' },
-        { label: 'Configurações', icon: 'Settings', to: '/settings' },
-        { label: 'Sair', icon: 'LogOut', to: '/logout' },
+        { label: t('navbar-menu.my_profile'), icon: 'User', to: '/profile' },
+        { label: t('navbar-menu.my_orders'), icon: 'Package', to: '/orders' },
+        { label: t('navbar-menu.settings'), icon: 'Settings', to: '/settings' },
+        { label: t('navbar-menu.logout'), icon: 'LogOut', to: '/logout', action: handleLogout },
     ];
 
-    useEffect(() => {
-        localStorage.setItem("Site Language:", language);
-        localStorage.setItem("Flag Code:", flagCode);
-    }, [language, flagCode]);
+    // Função para alterar o idioma usando i18n.changeLanguage
+    const handleLanguageChange = (item) => {
+        i18n.changeLanguage(item.code);
+        setIsDropdownOpen(false);
+    };
+
+    // Encontra o idioma e a bandeira ATUAL com base no i18n.language
+    const currentLanguage = languageOptions.find(opt => opt.code === i18n.language)
+        || languageOptions.find(opt => opt.code.includes(i18n.language))
+        || languageOptions[0]; // Fallback
+    const currentFlagCode = currentLanguage.flag;
+    const currentLanguageLabel = currentLanguage.label;
 
 
+    // Componente de Bandeira (mantido)
     const FlagComponent = ({ code }) => {
         if (!code) return null;
         return (
@@ -54,12 +80,7 @@ const BotNavbar = () => {
         );
     };
 
-    const handleLanguageChange = (item) => {
-        setLanguage(item.label);
-        setFlagCode(item.code);
-        setIsDropdownOpen(false);
-    };
-
+    // Função para obter o componente do ícone (mantida)
     const getIconComponent = (iconName) => {
         switch (iconName) {
             case 'User': return User;
@@ -74,8 +95,12 @@ const BotNavbar = () => {
         <div className='bg-white flex justify-between items-center px-3 md:px-10 py-3 shadow-sm'>
             <div className='flex justify-center items-center gap-10'>
                 {/* Logo */}
-                <Link to={'/'}>
-                    <p className='font-semibold text-xl w-full flex'>Data<span className='text-green-700 mr-1'>sytem</span> Infocell</p>
+                <Link to={'/home'}>
+                    <p className='font-semibold text-xl w-full flex'>
+                        Data
+                        <span className='text-green-700 mr-1'>system</span>
+                        InfoCell
+                    </p>
                 </Link>
                 {/* Search */}
                 <div className='relative w-full justify-center-safe hidden md:block'>
@@ -85,7 +110,7 @@ const BotNavbar = () => {
                     <input
                         className='border border-gray-300 px-3 rounded-md lg:w-200 md:w-50 pl-10 h-10'
                         type="text"
-                        placeholder='What are you looking for?'
+                        placeholder={t('search.placeholder')}
                     />
                 </div>
             </div>
@@ -103,8 +128,9 @@ const BotNavbar = () => {
                         className='bg-white text-gray-700 text-base px-4 py-2 rounded-lg flex transition
                         items-center justify-between min-w-min cursor-pointer hover:bg-gray-200'
                     >
-                        <FlagComponent code={flagCode} />
-                        <span className="truncate">{language}</span>
+                        {/* Bandeira e Label do Idioma ATUAL */}
+                        <FlagComponent code={currentFlagCode} />
+                        <span className="truncate">{currentLanguageLabel}</span>
                         <ChevronDown className={`w-4 h-4 ml-2 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : 'rotate-0'}`} />
                     </button>
 
@@ -116,10 +142,10 @@ const BotNavbar = () => {
                                 <button
                                     key={i}
                                     className={`w-full text-left px-4 py-2 flex items-center hover:bg-gray-100 transition ease-in-out cursor-pointer
-                                        ${item.label === language ? 'font-semibold bg-gray-50' : ''}`}
+                                        ${item.code === i18n.language ? 'font-semibold bg-gray-50' : ''}`}
                                     onClick={() => handleLanguageChange(item)}
                                 >
-                                    <FlagComponent code={item.code} />
+                                    <FlagComponent code={item.flag} />
                                     {item.label}
                                 </button>
                             ))}
@@ -135,10 +161,10 @@ const BotNavbar = () => {
                         onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                         className='flex items-center justify-center gap-2 cursor-pointer hover:bg-gray-200 rounded-lg p-2'
                     >
-                        <div className='bg-gray-300 w-10 h-10 rounded-full flex items-center justify-center font-bold'>JD</div>
+                        <div className='bg-gray-300 w-10 h-10 rounded-full flex items-center justify-center font-bold'>{fistLetterName}{secondLetterName}</div>
                         <div className='hidden md:block text-left'>
-                            <p className='text-gray-500 text-sm'>Welcome Back!</p>
-                            <h1 className='font-bold'>João Daniel</h1>
+                            <p className='text-gray-500 text-sm'>{t('user_menu.welcome_back')}</p>
+                            <h1 className='font-bold'>{firstName} {secondName}</h1>
                         </div>
                         <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isUserMenuOpen ? 'rotate-180' : 'rotate-0'}`} />
                     </button>
@@ -147,17 +173,16 @@ const BotNavbar = () => {
                             className='absolute top-full right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-xl py-2 z-40'
                         >
                             {userMenuItems.map((item, index) => {
-                                // 3. Pega o componente do ícone
                                 const IconComponent = getIconComponent(item.icon);
 
                                 return (
                                     <Link
                                         key={index}
                                         to={item.to}
-                                        onClick={() => setIsUserMenuOpen(false)}
+                                        onClick={() => { item.action ? item.action() : setIsUserMenuOpen(false) }}
                                         className='flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-100 transition'
                                     >
-                                        {IconComponent && <IconComponent className='w-4 h-4' />} {/* Renderiza o ícone */}
+                                        {IconComponent && <IconComponent className='w-4 h-4' />}
                                         {item.label}
                                     </Link>
                                 );
